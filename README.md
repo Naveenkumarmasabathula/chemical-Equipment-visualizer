@@ -71,6 +71,16 @@ If you already have a Web Service that was created as **Python**, you cannot cha
 
 Full details: see [DEPLOY.md](DEPLOY.md).
 
+### Fix "Bad Request (400)" on Render
+
+Django returns **400 Bad Request** when the request’s host is not in **ALLOWED_HOSTS**. On Render you must set:
+
+- **Environment variable:** `DJANGO_ALLOWED_HOSTS`
+- **Value:** your service hostname **without** `https://` or trailing slash, e.g.  
+  `chemical-equipment-visualizer-yy0o.onrender.com`
+
+In Render: **Dashboard** → your **Web Service** → **Environment** → add or edit `DJANGO_ALLOWED_HOSTS` with that value → **Save**. Redeploy if needed; the next request should succeed.
+
 ### Test with production-like settings locally
 
 To confirm the app runs with production-style env (no default admin, no debug):

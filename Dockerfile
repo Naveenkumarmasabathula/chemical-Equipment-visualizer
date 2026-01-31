@@ -21,4 +21,5 @@ RUN pip install --no-cache-dir -r requirements.txt && \
 # Render sets PORT at runtime
 ENV PORT=10000
 EXPOSE 10000
-CMD cd backend && gunicorn config.wsgi --bind 0.0.0.0:${PORT}
+# Run migrations then start the server (required for signup/login to work)
+CMD cd backend && python manage.py migrate --noinput && gunicorn config.wsgi --bind 0.0.0.0:${PORT}
