@@ -52,9 +52,12 @@ React (Web) and PyQt5 (Desktop) frontends with a **Django + Django REST Framewor
 If your live site shows **"Frontend not built"**, Render is not building the React app. In the Render dashboard:
 
 1. Open your **Web Service** → **Settings** → **Build & Deploy**.
-2. Set **Build Command** to: `bash build.sh`
+2. Set **Build Command** to either:
+   - `bash build.sh`  
+   - or this one-liner (use if the script fails):  
+     `npm install && VITE_BASE_URL=/static/ npm run build && pip install -r requirements.txt && cd backend && python manage.py collectstatic --noinput`
 3. Set **Start Command** to: `cd backend && gunicorn config.wsgi --bind 0.0.0.0:$PORT`
-4. **Save**, then go to **Manual Deploy** → **Deploy latest commit**.
+4. **Save**, then **Manual Deploy** → **Deploy latest commit**.
 
 Full details: see [DEPLOY.md](DEPLOY.md).
 
