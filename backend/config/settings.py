@@ -51,7 +51,13 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+MEDIA_URL = "/media/"
+_client_build = BASE_DIR.parent / "client" / "dist" / "public"
+STATICFILES_DIRS = [_client_build] if _client_build.exists() else []
+
+MIDDLEWARE.insert(2, "whitenoise.middleware.WhiteNoiseMiddleware")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

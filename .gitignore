@@ -12,3 +12,4 @@ venv
 .env
 *.sqlite3
 *.log
+backend/staticfiles
