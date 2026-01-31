@@ -210,7 +210,25 @@ pip install -r desktop/requirements.txt
 cd desktop
 pyinstaller main.spec
 ```
+<<<<<<< HEAD
 Output: `desktop/dist/ChemicalEquipmentVisualizer.exe` (Windows) or `desktop/dist/ChemicalEquipmentVisualizer` (Linux/macOS). Upload this file to **GitHub Releases** so users can download and run it.
+=======
+Output: `dist/ChemicalEquipmentVisualizer.exe` (Windows) or `dist/ChemicalEquipmentVisualizer` (Linux/macOS). Upload this file to **GitHub Releases** (see below) so users can download and run it.
+
+### How to publish the desktop .exe (GitHub Release)
+
+1. **Do not commit the .exe** — `dist/` is in `.gitignore`. Push only code.
+2. **Open your repo on GitHub** → click **Releases** (right-hand side, or `https://github.com/Naveenkumarmasabathula/chemical-Equipment-visualizer/releases`).
+3. **Draft a new release** — click **“Draft a new release”** (or **“Create a new release”**).
+4. **Choose a tag** — e.g. `v1.0`. If it doesn’t exist, type `v1.0` and click **“Create new tag: v1.0”**.
+5. **Release title** — e.g. `v1.0` or `Chemical Equipment Visualizer 1.0`.
+6. **Description** — optional (e.g. “Desktop app: PyQt5 client for the Render backend.”).
+7. **Attach the .exe** — under “Assets”, click **“Attach binaries by dropping them here or selecting them”**, then choose `dist\ChemicalEquipmentVisualizer.exe` from your project folder.
+8. **Publish** — click **“Publish release”**.
+9. **Copy the download link** — on the release page, right‑click **ChemicalEquipmentVisualizer.exe** under Assets → **Copy link address**. It will look like:  
+   `https://github.com/Naveenkumarmasabathula/chemical-Equipment-visualizer/releases/download/v1.0/ChemicalEquipmentVisualizer.exe`
+10. **Update this README** — replace the Releases link above with that download URL so the **Download** link points directly to the .exe.
+>>>>>>> dbd4ca7 (depl11)
 
 ### Network and errors
 
