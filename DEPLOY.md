@@ -18,7 +18,10 @@ If you already created a Web Service and see `ModuleNotFoundError: No module nam
 4. Click **Save Changes**. Render will redeploy.
 
 - **Root Directory:** leave blank (repo root).
-- **Build Command:** `pip install -r requirements.txt`
+- **Build Command (API only):** `pip install -r requirements.txt`  
+- **Build Command (API + React app):**  
+  `npm install && VITE_BASE_URL=/static/ npm run build && pip install -r requirements.txt && cd backend && python manage.py collectstatic --noinput`  
+  Use this so the site at `/` serves the React app; otherwise you'll see "Frontend not built".
 - **Start Command:** `cd backend && gunicorn config.wsgi --bind 0.0.0.0:$PORT`  
   **Important:** Do not use Render’s default `gunicorn your_application.wsgi` — this project uses `config.wsgi` and must run from the `backend` folder.
 - **Environment:** Add `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=false`, `DJANGO_ALLOWED_HOSTS=<your-service>.onrender.com`, `ALLOW_CREATE_DEFAULT_USER=false`.
