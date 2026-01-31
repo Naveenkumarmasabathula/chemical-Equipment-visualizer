@@ -2,6 +2,8 @@
 
 Two main options: **single server** (backend + frontend together) or **split** (backend on one host, frontend on another).
 
+**Render:** Use your Render service URL as the host. If your app is at `https://chemical-viz.onrender.com`, set `DJANGO_ALLOWED_HOSTS=chemical-viz.onrender.com` (no `https://`, no trailing slash). With a custom domain, add it: `chemical-viz.onrender.com,www.yourdomain.com`.
+
 ---
 
 ## Option A: Single server (Django serves API + React build)
@@ -15,6 +17,7 @@ One host serves the app and the API. Good for VPS, Railway, Render, Fly.io.
 export DJANGO_SECRET_KEY="your-long-random-secret"
 export DJANGO_DEBUG=false
 export DJANGO_ALLOWED_HOSTS="yourdomain.com,www.yourdomain.com"
+# On Render use your service host, e.g.: chemical-viz.onrender.com
 export ALLOW_CREATE_DEFAULT_USER=false
 ```
 
@@ -24,6 +27,7 @@ On Windows PowerShell:
 $env:DJANGO_SECRET_KEY="your-long-random-secret"
 $env:DJANGO_DEBUG="false"
 $env:DJANGO_ALLOWED_HOSTS="yourdomain.com,www.yourdomain.com"
+# On Render use your service host, e.g.: chemical-viz.onrender.com
 $env:ALLOW_CREATE_DEFAULT_USER="false"
 ```
 
