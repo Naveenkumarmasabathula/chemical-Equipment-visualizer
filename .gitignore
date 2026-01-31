@@ -1,0 +1,14 @@
+node_modules
+dist
+.DS_Store
+vite.config.ts.*
+*.tar.gz
+
+# Python / Django
+__pycache__
+*.py[cod]
+.venv
+venv
+.env
+*.sqlite3
+*.log
