@@ -49,15 +49,18 @@ React (Web) and PyQt5 (Desktop) frontends with a **Django + Django REST Framewor
 
 ### Deploy on Render (fix "Frontend not built")
 
-If your live site shows **"Frontend not built"**, Render is not building the React app. In the Render dashboard:
+If your live site shows **"Frontend not built"** (and DevTools may show "Content unavailable. Resource was not cached" because there is no app to load), Render is not building the React app. In the Render dashboard:
 
 1. Open your **Web Service** → **Settings** → **Build & Deploy**.
-2. Set **Build Command** to either:
-   - `bash build.sh`  
-   - or this one-liner (use if the script fails):  
-     `npm install && VITE_BASE_URL=/static/ npm run build && pip install -r requirements.txt && cd backend && python manage.py collectstatic --noinput`
-3. Set **Start Command** to: `cd backend && gunicorn config.wsgi --bind 0.0.0.0:$PORT`
-4. **Save**, then **Manual Deploy** → **Deploy latest commit**.
+2. **Root Directory** must be **blank** (build must run from repo root where `package.json` and `build.sh` live). If it is set to `backend`, clear it.
+3. **Build Command** — set to exactly this (one line):
+   ```bash
+   npm install && VITE_BASE_URL=/static/ npm run build && pip install -r requirements.txt && cd backend && python manage.py collectstatic --noinput
+   ```
+4. **Start Command** — set to: `cd backend && gunicorn config.wsgi --bind 0.0.0.0:$PORT`
+5. **Save**, then **Manual Deploy** → **Deploy latest commit**.
+
+After deploy, open the **Build logs** and confirm you see npm install, Vite build, and "X static files copied" with a number much larger than 36. Then the site should load the React app.
 
 Full details: see [DEPLOY.md](DEPLOY.md).
 
