@@ -47,6 +47,17 @@ React (Web) and PyQt5 (Desktop) frontends with a **Django + Django REST Framewor
    - Backend: `npm run dev:backend` (or `python backend/manage.py runserver 8000`)
    - Frontend: `npm run dev:frontend` then open http://localhost:5000
 
+### Deploy on Render (fix "Frontend not built")
+
+If your live site shows **"Frontend not built"**, Render is not building the React app. In the Render dashboard:
+
+1. Open your **Web Service** → **Settings** → **Build & Deploy**.
+2. Set **Build Command** to: `bash build.sh`
+3. Set **Start Command** to: `cd backend && gunicorn config.wsgi --bind 0.0.0.0:$PORT`
+4. **Save**, then go to **Manual Deploy** → **Deploy latest commit**.
+
+Full details: see [DEPLOY.md](DEPLOY.md).
+
 ### Test with production-like settings locally
 
 To confirm the app runs with production-style env (no default admin, no debug):
