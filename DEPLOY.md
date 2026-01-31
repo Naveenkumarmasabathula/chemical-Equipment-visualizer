@@ -4,6 +4,15 @@ Two main options: **single server** (backend + frontend together) or **split** (
 
 **Render:** Use your Render service URL as the host. If your app is at `https://chemical-viz.onrender.com`, set `DJANGO_ALLOWED_HOSTS=chemical-viz.onrender.com` (no `https://`, no trailing slash). With a custom domain, add it: `chemical-viz.onrender.com,www.yourdomain.com`.
 
+### Render setup (Web Service)
+
+- **Root Directory:** leave blank (repo root).
+- **Build Command:** `pip install -r requirements.txt`
+- **Start Command:** `cd backend && gunicorn config.wsgi --bind 0.0.0.0:$PORT`
+- **Environment:** Add `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=false`, `DJANGO_ALLOWED_HOSTS=<your-service>.onrender.com`, `ALLOW_CREATE_DEFAULT_USER=false`.
+
+To serve the React app too, use a build that builds the frontend and runs collectstatic (see Option A below).
+
 ---
 
 ## Option A: Single server (Django serves API + React build)
