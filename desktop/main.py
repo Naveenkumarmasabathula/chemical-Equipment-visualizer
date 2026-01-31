@@ -10,6 +10,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 
 from desktop.api_client import ApiClient
+from desktop.config import DEFAULT_API_URL
 from desktop.login_dialog import LoginDialog
 from desktop.main_window import MainWindow
 
@@ -22,8 +23,8 @@ def main():
     font.setPointSize(10)
     app.setFont(font)
 
-    api_base = os.environ.get("API_BASE_URL", "http://localhost:8000/api")
-    client = ApiClient(base_url=api_base)
+    # Connects to Render backend by default. Set API_BASE_URL for local or another host.
+    client = ApiClient(base_url=DEFAULT_API_URL)
 
     login = LoginDialog(client)
     if login.exec_() != LoginDialog.Accepted:

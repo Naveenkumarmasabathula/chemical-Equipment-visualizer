@@ -1,6 +1,6 @@
 # Chemical Equipment Parameter Visualizer (Hybrid Web + Desktop)
 
-React (Web) and PyQt5 (Desktop) frontends with a **Django + Django REST Framework** API backend using **Pandas** for CSV parsing/analytics and **SQLite** for data storage.
+**Same backend, two frontends.** React (Web) and PyQt5 (Desktop) both consume the same **Django REST API** over HTTP. No Django or SQLite inside the desktop app — it is a **distributed client** that talks only to the deployed backend (e.g. Render).
 
 ## Task requirements checklist
 
@@ -152,22 +152,80 @@ CSV columns: Equipment Name (or `equipment_name`), Type (or `equipment_type`), o
 
 ---
 
-## Desktop app (PyQt5 + Matplotlib)
+## Desktop application
 
-The desktop client uses the same Django API. Run the backend first, then the desktop app.
+The desktop version is a **PyQt5-based client** that connects to the same Django REST backend (e.g. deployed on Render). It does **not** run Django or SQLite locally — it only:
+
+1. Picks a CSV file  
+2. Sends it to the backend (`POST /api/upload/`)  
+3. Receives JSON (datasets, summary)  
+4. Visualizes locally (Matplotlib)
+
+**Architecture:** One backend (Django on Render); two frontends (React in the browser, PyQt5 desktop). Both consume the API over HTTP/REST/JSON.
+
+### Download (executable)
+
+| OS      | File        |
+| ------- | ----------- |
+| Windows | `.exe`      |
+| Linux   | `.AppImage` |
+| macOS   | `.dmg`      |
+
+**Download:**  
+[**ChemicalEquipmentVisualizer.exe**](https://github.com/Naveenkumarmasabathula/chemical-Equipment-visualizer/releases) — get the latest from **Releases**. Double-click to run; no Python or setup required.
+
+**Requirements:**  
+- Internet connection (the app talks to the Render backend).  
+- No Python installation required for end users.
+
+### Run from source (developers)
 
 1. Install desktop dependencies:
    ```bash
    pip install -r desktop/requirements.txt
    ```
-
-2. Start the backend (if not already running):
-   ```bash
-   npm run dev:backend
-   ```
-
-3. Run the desktop app:
+2. Run the desktop app (it uses the **Render backend** by default):
    ```bash
    python desktop/main.py
    ```
-   Default API base: `http://localhost:8000/api`. Log in with **admin** / **admin**, then upload CSV, view datasets, summary, charts (Matplotlib), and download PDF report.
+   To use a local backend instead, set `API_BASE_URL=http://localhost:8000/api` before running.
+
+### Build executable (for distribution)
+
+From the **project root**:
+
+**Windows:**
+```bash
+build_desktop.bat
+```
+**macOS/Linux:**
+```bash
+bash build_desktop.sh
+```
+
+Or manually:
+```bash
+pip install pyinstaller
+pip install -r desktop/requirements.txt
+cd desktop
+pyinstaller main.spec
+```
+Output: `dist/ChemicalEquipmentVisualizer.exe` (Windows) or `dist/ChemicalEquipmentVisualizer` (Linux/macOS). Upload this file to **GitHub Releases** (see below) so users can download and run it.
+
+### How to publish the desktop .exe (GitHub Release)
+
+1. **Do not commit the .exe** — `dist/` is in `.gitignore`. Push only code.
+2. **Open your repo on GitHub** → click **Releases** (right-hand side, or `https://github.com/Naveenkumarmasabathula/chemical-Equipment-visualizer/releases`).
+3. **Draft a new release** — click **“Draft a new release”** (or **“Create a new release”**).
+4. **Choose a tag** — e.g. `v1.0`. If it doesn’t exist, type `v1.0` and click **“Create new tag: v1.0”**.
+5. **Release title** — e.g. `v1.0` or `Chemical Equipment Visualizer 1.0`.
+6. **Description** — optional (e.g. “Desktop app: PyQt5 client for the Render backend.”).
+7. **Attach the .exe** — under “Assets”, click **“Attach binaries by dropping them here or selecting them”**, then choose `dist\ChemicalEquipmentVisualizer.exe` from your project folder.
+8. **Publish** — click **“Publish release”**.
+9. **Copy the download link** — on the release page, right‑click **ChemicalEquipmentVisualizer.exe** under Assets → **Copy link address**. It will look like:  
+   `https://github.com/Naveenkumarmasabathula/chemical-Equipment-visualizer/releases/download/v1.0/ChemicalEquipmentVisualizer.exe`
+10. **Update this README** — replace the Releases link above with that download URL so the **Download** link points directly to the .exe.
+
+### Network and errors
+
+The desktop app handles timeouts, connection errors, and server (5xx) errors with user-friendly messages (e.g. “Unable to connect to server”). It does not crash on network failure.
