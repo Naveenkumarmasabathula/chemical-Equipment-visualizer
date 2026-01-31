@@ -49,18 +49,25 @@ React (Web) and PyQt5 (Desktop) frontends with a **Django + Django REST Framewor
 
 ### Deploy on Render (fix "Frontend not built")
 
-If your live site shows **"Frontend not built"** (and DevTools may show "Content unavailable. Resource was not cached" because there is no app to load), Render is not building the React app. In the Render dashboard:
+If your live site shows **"Frontend not built"** and build logs show only **"36 static files copied"**, Render is not building the React app. Two options:
 
+**Option A – Use Docker (recommended, no dashboard Build Command needed)**  
+The repo includes a `Dockerfile` that runs npm build + pip + collectstatic. So Render can build the frontend without relying on the Build Command field.
+
+1. In Render: **New** → **Web Service**. Connect this repo.
+2. Set **Environment** to **Docker** (not Python). Leave **Build Command** and **Start Command** blank; Render will use the Dockerfile.
+3. Add env vars: `DJANGO_SECRET_KEY` (or generate), `DJANGO_DEBUG=false`, `DJANGO_ALLOWED_HOSTS=<your-service>.onrender.com`, `ALLOW_CREATE_DEFAULT_USER=false`.
+4. Create the service. After deploy, the build log should show the Docker build (Node + Python stages) and the site should serve the React app.
+
+If you already have a Web Service that was created as **Python**, you cannot change it to Docker. Create a new Web Service with **Docker** as above, then delete the old one (or keep both and point the URL to the new one).
+
+**Option B – Keep Python and set Build Command**  
 1. Open your **Web Service** → **Settings** → **Build & Deploy**.
-2. **Root Directory** must be **blank** (build must run from repo root where `package.json` and `build.sh` live). If it is set to `backend`, clear it.
-3. **Build Command** — set to exactly this (one line):
-   ```bash
-   npm install && VITE_BASE_URL=/static/ npm run build && pip install -r requirements.txt && cd backend && python manage.py collectstatic --noinput
-   ```
-4. **Start Command** — set to: `cd backend && gunicorn config.wsgi --bind 0.0.0.0:$PORT`
-5. **Save**, then **Manual Deploy** → **Deploy latest commit**.
-
-After deploy, open the **Build logs** and confirm you see npm install, Vite build, and "X static files copied" with a number much larger than 36. Then the site should load the React app.
+2. **Root Directory** must be **blank**.
+3. **Build Command** — set to exactly this (one line):  
+   `npm install && VITE_BASE_URL=/static/ npm run build && pip install -r requirements.txt && cd backend && python manage.py collectstatic --noinput`
+4. **Start Command** — `cd backend && gunicorn config.wsgi --bind 0.0.0.0:$PORT`
+5. **Save**, then **Manual Deploy**. In the build log you should see npm install, Vite build, and **many more than 36** static files copied.
 
 Full details: see [DEPLOY.md](DEPLOY.md).
 

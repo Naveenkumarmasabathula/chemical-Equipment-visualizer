@@ -6,16 +6,19 @@ Two main options: **single server** (backend + frontend together) or **split** (
 
 ### Render setup (Web Service)
 
-**Option 1 – Use the Blueprint (recommended)**  
-The repo includes a `render.yaml` that sets the correct build and start commands. In Render: **New → Blueprint**, connect this repo, and Render will create the service with the right start command. Then set **DJANGO_ALLOWED_HOSTS** in the service Environment to your host (e.g. `chemical-equipment-visualizer.onrender.com`).
+**Option 1 – Use Docker (recommended if you keep seeing "Frontend not built")**  
+The repo includes a `Dockerfile` that runs npm build, pip install, and collectstatic. Create a **new** Web Service, connect this repo, set **Environment** to **Docker** (not Python). Leave Build Command and Start Command blank; Render uses the Dockerfile. Set **DJANGO_ALLOWED_HOSTS** and other env vars. The build will include the React app. (Existing Python services cannot be switched to Docker; create a new Docker service and delete the old one if needed.)
 
-**Option 2 – Fix an existing service**  
-If you see "Frontend not built" or `ModuleNotFoundError: No module named 'your_application'`:
+**Option 2 – Use the Blueprint**  
+The repo includes a `render.yaml` that uses `runtime: docker`. In Render: **New → Blueprint**, connect this repo; the created service will use the Dockerfile. Set **DJANGO_ALLOWED_HOSTS** in the service Environment to your host (e.g. `chemical-equipment-visualizer.onrender.com`).
+
+**Option 3 – Fix an existing Python service**  
+If you see "Frontend not built" (build logs show only "36 static files copied") or `ModuleNotFoundError`:
 
 1. Open the service in Render → **Settings** → **Build & Deploy**.
-2. Set **Build Command** to: `bash build.sh`
+2. Set **Build Command** to: `npm install && VITE_BASE_URL=/static/ npm run build && pip install -r requirements.txt && cd backend && python manage.py collectstatic --noinput`
 3. Set **Start Command** to: `cd backend && gunicorn config.wsgi --bind 0.0.0.0:$PORT`
-4. Click **Save Changes**, then trigger a **Manual Deploy** so the new build runs.
+4. **Root Directory** must be blank. Click **Save Changes**, then **Manual Deploy**.
 
 - **Root Directory:** leave blank (repo root).
 - **Build Command (API only):** `pip install -r requirements.txt`  

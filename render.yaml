@@ -1,8 +1,9 @@
+# Use runtime: docker so Render builds with the repo Dockerfile (npm + pip + collectstatic).
+# If you prefer native Python build, set runtime: python, buildCommand to the one-liner in README, startCommand: cd backend && gunicorn config.wsgi --bind 0.0.0.0:$PORT
 services:
   - type: web
     name: chemical-equipment-visualizer
-    buildCommand: bash build.sh
-    startCommand: cd backend && gunicorn config.wsgi --bind 0.0.0.0:$PORT
+    runtime: docker
     envVars:
       - key: DJANGO_DEBUG
         value: "false"
