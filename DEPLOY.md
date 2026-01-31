@@ -10,18 +10,16 @@ Two main options: **single server** (backend + frontend together) or **split** (
 The repo includes a `render.yaml` that sets the correct build and start commands. In Render: **New → Blueprint**, connect this repo, and Render will create the service with the right start command. Then set **DJANGO_ALLOWED_HOSTS** in the service Environment to your host (e.g. `chemical-equipment-visualizer.onrender.com`).
 
 **Option 2 – Fix an existing service**  
-If you already created a Web Service and see `ModuleNotFoundError: No module named 'your_application'`:
+If you see "Frontend not built" or `ModuleNotFoundError: No module named 'your_application'`:
 
-1. Open the service in Render → **Settings**.
-2. In **Build & Deploy**, find **Start Command**.
-3. Replace the default with: `cd backend && gunicorn config.wsgi --bind 0.0.0.0:$PORT`
-4. Click **Save Changes**. Render will redeploy.
+1. Open the service in Render → **Settings** → **Build & Deploy**.
+2. Set **Build Command** to: `bash build.sh`
+3. Set **Start Command** to: `cd backend && gunicorn config.wsgi --bind 0.0.0.0:$PORT`
+4. Click **Save Changes**, then trigger a **Manual Deploy** so the new build runs.
 
 - **Root Directory:** leave blank (repo root).
 - **Build Command (API only):** `pip install -r requirements.txt`  
-- **Build Command (API + React app):**  
-  `npm install && VITE_BASE_URL=/static/ npm run build && pip install -r requirements.txt && cd backend && python manage.py collectstatic --noinput`  
-  Use this so the site at `/` serves the React app; otherwise you'll see "Frontend not built".
+- **Build Command (API + React app):** `bash build.sh` (so the site at `/` serves the React app; otherwise you'll see "Frontend not built").
 - **Start Command:** `cd backend && gunicorn config.wsgi --bind 0.0.0.0:$PORT`  
   **Important:** Do not use Render’s default `gunicorn your_application.wsgi` — this project uses `config.wsgi` and must run from the `backend` folder.
 - **Environment:** Add `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=false`, `DJANGO_ALLOWED_HOSTS=<your-service>.onrender.com`, `ALLOW_CREATE_DEFAULT_USER=false`.
