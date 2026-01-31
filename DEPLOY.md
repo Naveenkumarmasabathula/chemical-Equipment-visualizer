@@ -6,6 +6,17 @@ Two main options: **single server** (backend + frontend together) or **split** (
 
 ### Render setup (Web Service)
 
+**Option 1 – Use the Blueprint (recommended)**  
+The repo includes a `render.yaml` that sets the correct build and start commands. In Render: **New → Blueprint**, connect this repo, and Render will create the service with the right start command. Then set **DJANGO_ALLOWED_HOSTS** in the service Environment to your host (e.g. `chemical-equipment-visualizer.onrender.com`).
+
+**Option 2 – Fix an existing service**  
+If you already created a Web Service and see `ModuleNotFoundError: No module named 'your_application'`:
+
+1. Open the service in Render → **Settings**.
+2. In **Build & Deploy**, find **Start Command**.
+3. Replace the default with: `cd backend && gunicorn config.wsgi --bind 0.0.0.0:$PORT`
+4. Click **Save Changes**. Render will redeploy.
+
 - **Root Directory:** leave blank (repo root).
 - **Build Command:** `pip install -r requirements.txt`
 - **Start Command:** `cd backend && gunicorn config.wsgi --bind 0.0.0.0:$PORT`  
