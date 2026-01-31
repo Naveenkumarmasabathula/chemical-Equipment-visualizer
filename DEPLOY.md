@@ -1,0 +1,132 @@
+# Deploying Chemical Equipment Visualizer
+
+Two main options: **single server** (backend + frontend together) or **split** (backend on one host, frontend on another).
+
+---
+
+## Option A: Single server (Django serves API + React build)
+
+One host serves the app and the API. Good for VPS, Railway, Render, Fly.io.
+
+### 1. Set production env vars
+
+```bash
+# Required
+export DJANGO_SECRET_KEY="your-long-random-secret"
+export DJANGO_DEBUG=false
+export DJANGO_ALLOWED_HOSTS="yourdomain.com,www.yourdomain.com"
+export ALLOW_CREATE_DEFAULT_USER=false
+```
+
+On Windows PowerShell:
+
+```powershell
+$env:DJANGO_SECRET_KEY="your-long-random-secret"
+$env:DJANGO_DEBUG="false"
+$env:DJANGO_ALLOWED_HOSTS="yourdomain.com,www.yourdomain.com"
+$env:ALLOW_CREATE_DEFAULT_USER="false"
+```
+
+### 2. Build frontend and collect static files
+
+Build with `VITE_BASE_URL=/static/` so assets are served under `/static/`:
+
+```bash
+# Windows PowerShell
+$env:VITE_BASE_URL="/static/"; npm run build
+
+# macOS/Linux
+VITE_BASE_URL=/static/ npm run build
+```
+
+Then collect static files:
+
+```bash
+cd backend
+python manage.py migrate
+python manage.py collectstatic --noinput
+```
+
+### 3. Run with Gunicorn
+
+```bash
+cd backend
+gunicorn config.wsgi --bind 0.0.0.0:8000
+```
+
+For production, run behind a reverse proxy (Nginx, Caddy) with HTTPS.
+
+### 4. Create an admin user
+
+Default admin is disabled in production. Create a user:
+
+```bash
+cd backend
+python manage.py createsuperuser
+```
+
+Or use the web app **Sign up** page after deployment.
+
+---
+
+## Option B: Split (backend + frontend on different hosts)
+
+Backend on Railway/Render/Fly.io; frontend on Vercel/Netlify (or same server, different port).
+
+### Backend
+
+1. Deploy the **backend** folder (or repo root with `Procfile`/start command pointing to backend).
+2. Set env vars as in Option A. Add your frontend URL to CORS:
+   - In `backend/config/settings.py`, add your frontend origin to `CORS_ALLOWED_ORIGINS`, e.g. `https://yourapp.vercel.app`.
+3. Start command: `gunicorn config.wsgi --bind 0.0.0.0:$PORT` (use `$PORT` if the host provides it).
+4. Run migrations (one-off): `python manage.py migrate`.
+5. Create a user: `python manage.py createsuperuser` or use Sign up.
+
+### Frontend
+
+1. Build with the API URL. The app uses relative `/api` by default. If the API is on a different origin, set it at build time:
+   - Add to frontend env (e.g. Vercel): `VITE_API_URL=https://your-api.railway.app`
+   - In `client/src/lib/authApi.ts`, use `const API_BASE = import.meta.env.VITE_API_URL ?? "";`
+2. Build: `npm run build`.
+3. Deploy `dist/public` (or the output of `npm run build`) to your static host.
+
+---
+
+## Quick single-server deploy (e.g. Ubuntu VPS)
+
+```bash
+# On the server
+git clone https://github.com/Naveenkumarmasabathula/chemical-Equipment-visualizer.git
+cd chemical-Equipment-visualizer
+
+pip install -r backend/requirements.txt
+npm install
+VITE_BASE_URL=/static/ npm run build
+
+cd backend
+export DJANGO_SECRET_KEY="$(openssl rand -base64 32)"
+export DJANGO_DEBUG=false
+export DJANGO_ALLOWED_HOSTS="yourdomain.com"
+export ALLOW_CREATE_DEFAULT_USER=false
+
+python manage.py migrate
+python manage.py collectstatic --noinput
+python manage.py createsuperuser
+
+gunicorn config.wsgi --bind 0.0.0.0:8000
+```
+
+Put Nginx (or Caddy) in front with SSL (e.g. Let's Encrypt) and proxy `/` and `/api` to `127.0.0.1:8000`.
+
+---
+
+## Checklist
+
+- [ ] `DJANGO_SECRET_KEY` set to a long random value
+- [ ] `DJANGO_DEBUG=false`
+- [ ] `DJANGO_ALLOWED_HOSTS` set to your domain(s)
+- [ ] `ALLOW_CREATE_DEFAULT_USER=false`
+- [ ] Migrations run (`python manage.py migrate`)
+- [ ] Frontend built (`npm run build`) and static collected (`collectstatic`) for single-server
+- [ ] Admin/user created via `createsuperuser` or Sign up
+- [ ] HTTPS and a production WSGI server (e.g. Gunicorn behind Nginx)

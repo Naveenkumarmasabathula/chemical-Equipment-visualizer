@@ -35,7 +35,7 @@ React (Web) and PyQt5 (Desktop) frontends with a **Django + Django REST Framewor
    cd backend
    python manage.py migrate
    ```
-   The default user (**admin** / **admin**) is created automatically on first API request. Optionally run `python manage.py create_default_user` to create it earlier.
+   **Default admin (admin / admin) is DEV ONLY** — it is created automatically on first API request when using default settings. **Must be disabled in production** (see Production deployment).
 
 4. Run both frontend and backend:
    ```bash
@@ -46,6 +46,23 @@ React (Web) and PyQt5 (Desktop) frontends with a **Django + Django REST Framewor
 5. Or run separately:
    - Backend: `npm run dev:backend` (or `python backend/manage.py runserver 8000`)
    - Frontend: `npm run dev:frontend` then open http://localhost:5000
+
+### Test with production-like settings locally
+
+To confirm the app runs with production-style env (no default admin, no debug):
+
+**Windows (PowerShell):**
+```powershell
+cd backend
+$env:DJANGO_DEBUG="false"; $env:ALLOW_CREATE_DEFAULT_USER="false"
+python manage.py runserver 8000
+```
+
+**Windows (cmd):** use `set DJANGO_DEBUG=false` and `set ALLOW_CREATE_DEFAULT_USER=false` before `python manage.py runserver 8000`.
+
+**macOS/Linux:** use `export DJANGO_DEBUG=false` and `export ALLOW_CREATE_DEFAULT_USER=false` before the runserver command.
+
+Create a user via the web app **Sign up** (or `python manage.py createsuperuser`) before logging in; the default admin is not created.
 
 ## Build & preview
 
@@ -58,14 +75,18 @@ Build output is in `dist/public`. For production, serve that folder (e.g. with D
 
 ## Production deployment
 
+See **[DEPLOY.md](DEPLOY.md)** for step-by-step deployment (single server or split backend/frontend).
+
+Summary:
+
 1. **Backend (Django)**  
-   Set environment variables (see `backend/.env.example`):
+   **Disable the default admin** and set environment variables (see `backend/.env.example`):
    - `DJANGO_SECRET_KEY` — long random secret (required in production).
    - `DJANGO_DEBUG=false` — disables debug mode and admin fallback login.
    - `DJANGO_ALLOWED_HOSTS` — comma-separated hosts (e.g. `api.example.com`).
-   - `ALLOW_CREATE_DEFAULT_USER=false` — optional; prevents auto-creation of default admin on empty DB.
+   - `ALLOW_CREATE_DEFAULT_USER=false` — **required in production**; prevents auto-creation of default admin on empty DB.
 
-   Run migrations, then serve with a production WSGI server (e.g. Gunicorn) behind a reverse proxy (HTTPS). Do not use the default admin password in production; change it with `python manage.py changepassword admin`.
+   Run migrations, then serve with a production WSGI server (e.g. Gunicorn) behind a reverse proxy (HTTPS). Create admin via `python manage.py createsuperuser` or user signup; do not rely on the dev-only default admin.
 
 2. **Frontend**  
    Build with `npm run build` and serve `dist/public` from your web server or the same host as the API. Ensure `/api` is proxied to the Django backend or set the client to use the full API URL.
@@ -75,7 +96,7 @@ Build output is in `dist/public`. For production, serve that folder (e.g. with D
 
 ## Features
 
-- **Basic authentication**: Sign in with username/password (default: admin / admin). All API endpoints require auth.
+- **Basic authentication**: Sign in with username/password. In dev, a default admin (admin / admin) is created; **disable in production** (see above). All API endpoints require auth.
 - **PDF report**: Download a PDF report for the selected dataset (header button).
 - **Pin datasets**: Pin datasets in history so they stay at the top; unpin to restore order.
 - **Delete with confirm**: Delete button in dataset history opens a confirmation dialog before removing.
