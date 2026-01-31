@@ -128,9 +128,9 @@ Put Nginx (or Caddy) in front with SSL (e.g. Let's Encrypt) and proxy `/` and `/
 
 - [ ] `DJANGO_SECRET_KEY` set to a long random value
 - [ ] `DJANGO_DEBUG=false`
-- [ ] `DJANGO_ALLOWED_HOSTS` set to your domain(s)
+- [ ] `DJANGO_ALLOWED_HOSTS` set to your domain(s) or Render host (e.g. `yourapp.onrender.com`)
 - [ ] `ALLOW_CREATE_DEFAULT_USER=false`
 - [ ] Migrations run (`python manage.py migrate`)
-- [ ] Frontend built (`npm run build`) and static collected (`collectstatic`) for single-server
+- [ ] Frontend built (`VITE_BASE_URL=/static/ npm run build`) and static collected (`collectstatic`) for single-server
 - [ ] Admin/user created via `createsuperuser` or Sign up
 - [ ] HTTPS and a production WSGI server (e.g. Gunicorn behind Nginx)
