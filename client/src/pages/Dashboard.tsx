@@ -210,7 +210,7 @@ export default function Dashboard() {
         <div className="container flex h-14 sm:h-16 items-center justify-between gap-2 sm:gap-4 px-3 sm:px-4 mx-auto max-w-[1600px]">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <div className="p-0.5 sm:p-1 rounded-lg bg-primary/10 shrink-0 flex items-center justify-center">
-              <img src="/favicon.png" alt="" className="w-[3.75rem] h-[3.75rem] sm:w-9 sm:h-9 object-contain" />
+              <img src="/static/favicon.png" alt="" className="w-[3.75rem] h-[3.75rem] sm:w-9 sm:h-9 object-contain" />
             </div>
             <div className="min-w-0">
               <h1 className="text-base sm:text-lg font-semibold tracking-tight truncate" data-testid="text-app-title">
